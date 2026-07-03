@@ -120,6 +120,14 @@ const Sidebar: Component<SidebarProps> = (props) => {
           Local
         </A>
       </Show>
+      <A
+        href="/providers/models"
+        class="sidebar__link"
+        classList={{ active: isGlobalActive('/providers/models') }}
+        aria-current={isGlobalActive('/providers/models') ? 'page' : undefined}
+      >
+        Connected models
+      </A>
 
       {/* Harnesses — collapsible section with a + create button.
           The collapse toggle and the create button are sibling buttons (never

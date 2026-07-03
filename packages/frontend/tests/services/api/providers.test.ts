@@ -3,6 +3,7 @@ import * as api from '../../../src/services/api';
 import {
   getProviders,
   getProviderUsage,
+  getConnectedModels,
   mergeUsage,
   type TenantProviderConfig,
   type TenantProviderUsage,
@@ -73,9 +74,52 @@ describe('providers API client', () => {
     expect((init as RequestInit).credentials).toBe('include');
   });
 
+  it('GETs connected models from /providers/models', async () => {
+    const response = {
+      models: [
+        {
+          model_key: 'gpt-4o',
+          model_name: 'gpt-4o',
+          display_name: null,
+          provider: 'openai',
+          provider_display_name: null,
+          auth_type: 'api_key',
+          connection_id: 'c1',
+          connection_label: 'Default',
+          is_active: true,
+          input_price_per_million: 2.5,
+          output_price_per_million: 10,
+          context_window: 128000,
+          capability_reasoning: true,
+          capability_code: false,
+          quality_score: 4,
+          models_fetched_at: null,
+        },
+      ],
+      stats: {
+        total_entries: 1,
+        unique_models: 1,
+        providers_with_models: 1,
+        free_models: 0,
+        models_with_pricing: 1,
+        reasoning_models: 1,
+        code_models: 0,
+        cheapest_input_per_million: 2.5,
+        cheapest_output_per_million: 10,
+      },
+    };
+    const fetchMock = setupFetch(response);
+
+    await expect(getConnectedModels()).resolves.toEqual(response);
+    const [url, init] = fetchMock.mock.calls[0];
+    expect(url).toContain('/api/v1/providers/models');
+    expect((init as RequestInit).credentials).toBe('include');
+  });
+
   it('re-exports the tenant provider clients from the root API barrel', () => {
     expect(api.getGlobalProviders).toBe(getProviders);
     expect(api.getGlobalProviderUsage).toBe(getProviderUsage);
+    expect(api.getConnectedModels).toBe(getConnectedModels);
     expect(api.mergeUsage).toBe(mergeUsage);
   });
 });

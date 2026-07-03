@@ -88,3 +88,13 @@
 .scroll-panel--at-bottom::after {
   opacity: 0;
 }
+
+/* ── Connected models group header ──────────────── */
+.model-group-header td {
+  cursor: pointer;
+  user-select: none;
+}
+
+.model-group-header:hover td {
+  background: hsl(var(--muted) / 0.5) !important;
+}

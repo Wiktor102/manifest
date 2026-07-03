@@ -14,6 +14,7 @@ export * from './api/waitlist.js';
 export {
   getProviders as getGlobalProviders,
   getProviderUsage as getGlobalProviderUsage,
+  getConnectedModels,
   mergeUsage,
   type ProvidersResponse,
   type ProviderUsageResponse,
@@ -21,4 +22,7 @@ export {
   type TenantProviderConfig,
   type TenantProviderUsage,
   type TenantProviderSummary,
+  type ConnectedModelEntry,
+  type ConnectedModelsStats,
+  type ConnectedModelsResponse,
 } from './api/providers.js';

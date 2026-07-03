@@ -59,6 +59,48 @@ export interface ProviderUsageResponse {
   providers: TenantProviderUsage[];
 }
 
+/**
+ * One (connection, model) pair from `GET /api/v1/providers/models`. The same
+ * model exposed by two providers (or two keys) shows up as two entries so
+ * prices can be compared. `model_key` is the raw model name used to group
+ * duplicates across providers.
+ */
+export interface ConnectedModelEntry {
+  model_key: string;
+  model_name: string;
+  display_name: string | null;
+  provider: string;
+  provider_display_name: string | null;
+  auth_type: AuthType;
+  connection_id: string;
+  connection_label: string;
+  is_active: boolean;
+  input_price_per_million: number | null;
+  output_price_per_million: number | null;
+  context_window: number | null;
+  capability_reasoning: boolean;
+  capability_code: boolean;
+  quality_score: number;
+  models_fetched_at: string | null;
+}
+
+export interface ConnectedModelsStats {
+  total_entries: number;
+  unique_models: number;
+  providers_with_models: number;
+  free_models: number;
+  models_with_pricing: number;
+  reasoning_models: number;
+  code_models: number;
+  cheapest_input_per_million: number | null;
+  cheapest_output_per_million: number | null;
+}
+
+export interface ConnectedModelsResponse {
+  models: ConnectedModelEntry[];
+  stats: ConnectedModelsStats;
+}
+
 /** Fetch provider CONFIG only (cheap; paints immediately). */
 export function getProviders() {
   return fetchJson<ProvidersResponse>('/providers');
@@ -67,6 +109,14 @@ export function getProviders() {
 /** Fetch provider USAGE stats (the expensive 30d aggregation). */
 export function getProviderUsage() {
   return fetchJson<ProviderUsageResponse>('/providers/usage');
+}
+
+/**
+ * Fetch every connected model across all of the tenant's providers — one row
+ * per (connection, model) pair. CONFIG only; never touches agent_messages.
+ */
+export function getConnectedModels() {
+  return fetchJson<ConnectedModelsResponse>('/providers/models');
 }
 
 const USAGE_ZERO: Omit<TenantProviderUsage, 'provider' | 'auth_type'> = {
