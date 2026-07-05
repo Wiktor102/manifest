@@ -6,6 +6,7 @@ import {
   buildDevCorsOptions,
   buildFrameSrc,
   createCorsOriginHandler,
+  parseCorsOrigins,
   parseFrameAncestors,
 } from './cors-csp-config';
 
@@ -15,11 +16,38 @@ describe('HOSTED_WINGMAN_ORIGIN', () => {
   });
 });
 
+describe('parseCorsOrigins', () => {
+  it('returns an empty array when undefined', () => {
+    expect(parseCorsOrigins(undefined)).toEqual([]);
+  });
+
+  it('returns an empty array when empty string', () => {
+    expect(parseCorsOrigins('')).toEqual([]);
+  });
+
+  it('returns a single origin', () => {
+    expect(parseCorsOrigins('http://localhost:3000')).toEqual(['http://localhost:3000']);
+  });
+
+  it('splits comma-separated origins and trims whitespace', () => {
+    expect(
+      parseCorsOrigins('http://192.168.1.67, http://localhost:3000,https://app.example.com'),
+    ).toEqual(['http://192.168.1.67', 'http://localhost:3000', 'https://app.example.com']);
+  });
+
+  it('drops empty entries between commas', () => {
+    expect(parseCorsOrigins('http://a.com,,,http://b.com')).toEqual([
+      'http://a.com',
+      'http://b.com',
+    ]);
+  });
+});
+
 describe('buildDevAllowedOrigins', () => {
   it('allows the Vite frontend, both loopback Wingman ports, and the hosted Wingman (deduped)', () => {
     expect(
       buildDevAllowedOrigins({
-        configuredOrigin: 'http://localhost:3000',
+        configuredOrigins: ['http://localhost:3000'],
         wingmanPort: 3002,
       }),
     ).toEqual([
@@ -32,12 +60,23 @@ describe('buildDevAllowedOrigins', () => {
 
   it('respects a custom Wingman port and configured origin', () => {
     const allowed = buildDevAllowedOrigins({
-      configuredOrigin: 'http://localhost:38240',
+      configuredOrigins: ['http://localhost:38240'],
       wingmanPort: 38239,
     });
     expect(allowed).toContain('http://localhost:38240');
     expect(allowed).toContain('http://localhost:38239');
     expect(allowed).toContain('http://127.0.0.1:38239');
+    expect(allowed).toContain(HOSTED_WINGMAN_ORIGIN);
+  });
+
+  it('includes multiple configured origins when passed an array', () => {
+    const allowed = buildDevAllowedOrigins({
+      configuredOrigins: ['http://localhost:3000', 'http://192.168.1.67'],
+      wingmanPort: 3002,
+    });
+    expect(allowed).toContain('http://localhost:3000');
+    expect(allowed).toContain('http://192.168.1.67');
+    expect(allowed).toContain('http://localhost:3002');
     expect(allowed).toContain(HOSTED_WINGMAN_ORIGIN);
   });
 });

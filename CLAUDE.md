@@ -376,7 +376,7 @@ See `packages/backend/.env.example` for all variables. Key ones:
 - `PORT` — Server port. Default: `3001`
 - `BIND_ADDRESS` — Bind address. Default: `127.0.0.1` (use `0.0.0.0` for Railway/Docker)
 - `NODE_ENV` — `development` or `production`. CORS only enabled in dev.
-- `CORS_ORIGIN` — Allowed CORS origin. Default: `http://localhost:3000`
+- `CORS_ORIGIN` — Allowed CORS origins in development. Comma-separated list. Default: `http://localhost:3000`.
 - `BETTER_AUTH_URL` — Base URL for Better Auth. Default: `http://localhost:{PORT}`
 - `FRONTEND_PORT` — Extra trusted origin port for Better Auth.
 - `API_KEY` — Secret for programmatic API access (X-API-Key header).

@@ -147,4 +147,33 @@ describe('appConfig', () => {
     const config = await loadConfig();
     expect(config.emailFrom).toBe('noreply@manifest.build');
   });
+
+  it('defaults corsOrigin to single origin when CORS_ORIGIN is unset', async () => {
+    delete process.env['CORS_ORIGIN'];
+    const config = await loadConfig();
+    expect(config.corsOrigin).toEqual(['http://localhost:3000']);
+  });
+
+  it('parses a single CORS_ORIGIN value', async () => {
+    process.env['CORS_ORIGIN'] = 'https://frontend.example.com';
+    const config = await loadConfig();
+    expect(config.corsOrigin).toEqual(['https://frontend.example.com']);
+  });
+
+  it('parses comma-separated CORS_ORIGIN values into an array', async () => {
+    process.env['CORS_ORIGIN'] =
+      'http://192.168.1.67, http://localhost:3000,https://app.example.com';
+    const config = await loadConfig();
+    expect(config.corsOrigin).toEqual([
+      'http://192.168.1.67',
+      'http://localhost:3000',
+      'https://app.example.com',
+    ]);
+  });
+
+  it('drops empty entries between commas in CORS_ORIGIN', async () => {
+    process.env['CORS_ORIGIN'] = 'http://a.com,,,http://b.com';
+    const config = await loadConfig();
+    expect(config.corsOrigin).toEqual(['http://a.com', 'http://b.com']);
+  });
 });

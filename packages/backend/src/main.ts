@@ -18,6 +18,7 @@ import {
   buildDevAllowedOrigins,
   buildDevCorsOptions,
   buildFrameSrc,
+  parseCorsOrigins,
   parseFrameAncestors,
 } from './cors-csp-config';
 import { createRateLimitReachedHandler } from './common/middleware/rate-limit-log';
@@ -85,9 +86,11 @@ export async function bootstrap() {
   // See `buildDevCorsOptions` for the rationale behind `credentials: false`,
   // the omitted `allowedHeaders`, and the preflight `maxAge`.
   if (isDev) {
-    const configuredOrigin = process.env['CORS_ORIGIN'] || 'http://localhost:3000';
+    const configuredOrigins = parseCorsOrigins(
+      process.env['CORS_ORIGIN'] || 'http://localhost:3000',
+    );
     const allowedOrigins = buildDevAllowedOrigins({
-      configuredOrigin,
+      configuredOrigins,
       wingmanPort,
     });
     // PNA preflight must answer before the cors middleware ends the

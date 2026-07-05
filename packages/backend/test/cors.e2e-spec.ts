@@ -8,6 +8,7 @@ import {
   applyPrivateNetworkAllow,
   buildDevAllowedOrigins,
   buildDevCorsOptions,
+  parseCorsOrigins,
 } from '../src/cors-csp-config';
 
 @Controller()
@@ -36,7 +37,7 @@ async function buildDevApp(): Promise<INestApplication> {
   }).compile();
   const app = moduleRef.createNestApplication();
   const allowedOrigins = buildDevAllowedOrigins({
-    configuredOrigin: 'http://localhost:3000',
+    configuredOrigins: parseCorsOrigins('http://localhost:3000'),
     wingmanPort: 3002,
   });
   app.use((req: Request, res: Response, next: NextFunction) => {

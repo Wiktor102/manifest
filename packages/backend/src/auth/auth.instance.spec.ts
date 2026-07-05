@@ -161,6 +161,17 @@ describe('auth.instance', () => {
       expect(config.trustedOrigins).toContain('https://frontend.example.com');
     });
 
+    it('includes multiple CORS_ORIGIN values when comma-separated', () => {
+      process.env['CORS_ORIGIN'] =
+        'https://frontend.example.com, http://192.168.1.67,https://app.example.com';
+      loadModule();
+
+      const config = mockBetterAuth.mock.calls[0][0];
+      expect(config.trustedOrigins).toContain('https://frontend.example.com');
+      expect(config.trustedOrigins).toContain('http://192.168.1.67');
+      expect(config.trustedOrigins).toContain('https://app.example.com');
+    });
+
     it('includes FRONTEND_PORT origin when set', () => {
       process.env['FRONTEND_PORT'] = '4000';
       loadModule();

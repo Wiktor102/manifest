@@ -1,4 +1,5 @@
 import { registerAs } from '@nestjs/config';
+import { parseCorsOrigins } from '../cors-csp-config';
 
 function resolveDatabaseUrl(): string {
   const url = process.env['DATABASE_URL'];
@@ -13,7 +14,7 @@ export const appConfig = registerAs('app', () => ({
   nodeEnv: process.env['NODE_ENV'] ?? 'development',
   databaseUrl: resolveDatabaseUrl(),
 
-  corsOrigin: process.env['CORS_ORIGIN'] ?? 'http://localhost:3000',
+  corsOrigin: parseCorsOrigins(process.env['CORS_ORIGIN'] ?? 'http://localhost:3000'),
   betterAuthUrl: process.env['BETTER_AUTH_URL'] ?? '',
   throttleTtl: Number(process.env['THROTTLE_TTL'] ?? 60000),
   throttleLimit: Number(process.env['THROTTLE_LIMIT'] ?? 100),

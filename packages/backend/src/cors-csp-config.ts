@@ -5,8 +5,16 @@
 
 export const HOSTED_WINGMAN_ORIGIN = 'https://wingman.manifest.build';
 
+export function parseCorsOrigins(raw: string | undefined): string[] {
+  if (!raw) return [];
+  return raw
+    .split(',')
+    .map((v) => v.trim())
+    .filter(Boolean);
+}
+
 export interface DevOriginBuilderOptions {
-  configuredOrigin: string;
+  configuredOrigins: string[];
   wingmanPort: number;
 }
 
@@ -16,12 +24,12 @@ export interface FrameSrcOptions {
 }
 
 export function buildDevAllowedOrigins({
-  configuredOrigin,
+  configuredOrigins,
   wingmanPort,
 }: DevOriginBuilderOptions): string[] {
   return Array.from(
     new Set([
-      configuredOrigin,
+      ...configuredOrigins,
       `http://localhost:${wingmanPort}`,
       `http://127.0.0.1:${wingmanPort}`,
       'http://localhost:3002',

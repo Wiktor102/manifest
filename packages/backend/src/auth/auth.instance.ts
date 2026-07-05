@@ -39,7 +39,11 @@ function buildTrustedOrigins(): string[] {
     origins.push(process.env['BETTER_AUTH_URL']);
   }
   if (process.env['CORS_ORIGIN']) {
-    origins.push(process.env['CORS_ORIGIN']);
+    process.env['CORS_ORIGIN']
+      .split(',')
+      .map((v) => v.trim())
+      .filter(Boolean)
+      .forEach((origin) => origins.push(origin));
   }
   if (isDev) {
     origins.push(
